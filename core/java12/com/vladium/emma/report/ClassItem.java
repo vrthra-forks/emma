@@ -242,5 +242,10 @@ final class ClassItem extends Item
             1 << IItemAttribute.ATTRIBUTE_LINE_COVERAGE_ID);
     }
 
+	@Override
+	public String getAggregates(int type) {
+		return "<classitem>";
+	}
+
 } // end of class
 // ----------------------------------------------------------------------------

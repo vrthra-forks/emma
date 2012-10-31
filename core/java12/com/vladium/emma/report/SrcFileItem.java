@@ -49,6 +49,7 @@ final class SrcFileItem extends Item
 
         m_name = name;
         m_fullVMName = fullVMName;
+        System.out.println(">>" + name + " " +m_fullVMName);
     }
 
     public String getName ()
@@ -298,6 +299,11 @@ final class SrcFileItem extends Item
             1 << IItemAttribute.ATTRIBUTE_BLOCK_COVERAGE_ID |
             1 << IItemAttribute.ATTRIBUTE_LINE_COVERAGE_ID);
     }
+
+	@Override
+	public String getAggregates(int type) {
+		return "<srcfile>"; 
+	}
 
 } // end of class
 // ----------------------------------------------------------------------------

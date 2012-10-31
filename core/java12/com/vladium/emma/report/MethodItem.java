@@ -8,6 +8,9 @@
  */
 package com.vladium.emma.report;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import com.vladium.util.Descriptors;
 import com.vladium.util.IntObjectMap;
 import com.vladium.util.asserts.$assert;
@@ -213,6 +216,20 @@ final class MethodItem extends Item
             1 << IItemAttribute.ATTRIBUTE_BLOCK_COVERAGE_ID |
             1 << IItemAttribute.ATTRIBUTE_LINE_COVERAGE_ID);
     }
+
+	@Override
+	public String getAggregates(int type) {
+		
+        final ClassItem parent = ((ClassItem) m_parent);
+        final MethodDescriptor method = parent.m_cls.getMethods () [m_ID];
+        final IntObjectMap lineMap = method.getLineMap ();
+        StringBuffer sbuf = new StringBuffer();
+        for (int i : lineMap.keys()) {
+        	sbuf.append(i);
+        	sbuf.append(" ");
+        }
+		return sbuf.toString();
+	}
 
 } // end of class
 // ----------------------------------------------------------------------------

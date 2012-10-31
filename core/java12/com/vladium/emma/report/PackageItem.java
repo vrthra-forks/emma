@@ -71,6 +71,12 @@ final class PackageItem extends Item
             1 << IItemAttribute.ATTRIBUTE_LINE_COVERAGE_ID);
     }
 
+	@Override
+	public String getAggregates(int type) {
+		// TODO Auto-generated method stub
+		return "<packageitem>";
+	}
+
 
 } // end of class
 // ----------------------------------------------------------------------------

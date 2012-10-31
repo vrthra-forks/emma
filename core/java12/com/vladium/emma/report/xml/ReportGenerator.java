@@ -434,13 +434,16 @@ final class ReportGenerator extends AbstractReportGenerator
                 if (attr != null)
                 {
                     openElementTag ("coverage");
-
                     m_out.write (" type=\"");
                     m_out.write (Strings.HTMLEscape (attr.getName ()));
                     m_out.write ("\" value=\"");
                     attr.format (item, buf);
                     m_out.write (Strings.HTMLEscape (buf.toString ()));
                     m_out.write ('"');
+                    if (item instanceof MethodItem && attr.getName().contains("line")) {
+                    	MethodItem mi = (MethodItem)item;
+                    	m_out.write(" covered_lines=\""+ mi.getAggregates(0) + "\" ");
+                    }
                     buf.setLength (0);
 
                     closeElementTag (true);

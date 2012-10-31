@@ -19,7 +19,10 @@ public
 interface IAppConstants extends IAppVersion
 {
     // public: ................................................................
-
+	String APP_VERSION_WITH_BUILD_ID_AND_TAG = "1";
+	String APP_VERSION = "1";
+	String APP_BUILD_DATE = "1/1/1";
+	
     String APP_NAME         = "EMMA";
     String APP_NAME_LC      = "emma";
     String APP_COPYRIGHT    = "(C) Vladimir Roubtsov";

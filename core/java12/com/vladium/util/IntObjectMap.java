@@ -9,6 +9,7 @@
 package com.vladium.util;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 // ----------------------------------------------------------------------------
 /**
@@ -138,7 +139,7 @@ final class IntObjectMap implements Serializable
                     result [scan ++] = entry.m_key;
                 }
             }
-
+            Arrays.sort(result);
             return result;
         }
     }

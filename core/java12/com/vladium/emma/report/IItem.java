@@ -37,6 +37,7 @@ interface IItem
     IItemMetadata getMetadata ();
     IItemAttribute getAttribute (int attributeID, int unitsID);
     int getAggregate (int type);
+    String getAggregates(int type);
 
     void accept (IItemVisitor visitor, Object ctx);
 
