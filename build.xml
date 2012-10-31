@@ -36,7 +36,7 @@
   <property name="build.deprecation" value="off" />
   <property name="build.compiler" value="modern" />
   <property name="build.sysclasspath" value="ignore" />
-  <property name="build.target" value="1.2" /> <!-- all .class files are stamped as compatible with 1.2 JVMs: -->
+  <property name="build.target" value="1.6" /> <!-- all .class files are stamped as compatible with 1.2 JVMs: -->
 
   <!-- ============================================================== -->
   <!-- main/default build target: -->
