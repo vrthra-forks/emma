@@ -204,7 +204,7 @@
       <filterset>
         <filter token="APP_MAJOR_VERSION" value='*/ ${app.major.version}; // ' />
         <filter token="APP_MINOR_VERSION" value='*/ ${app.minor.version}; // ' />
-        <filter token="APP_BUILD_ID" value='*/ ${app.build.id}; // ' />
+        <filter token="APP_BUILD_ID" value='*/ 1; // ' />
         <filter token="APP_BUILD_RELEASE_TAG" value='*/ "${app.build.release.tag}"; // ' />
         <filter token="APP_BUILD_DATE" value='*/ "${app.build.date}"; // ' />
         <filter token="APP_BUG_REPORT_LINK" value='*/ "${app.bug.report.link}"; // ' />
