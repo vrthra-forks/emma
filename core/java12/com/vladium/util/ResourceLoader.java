@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: ResourceLoader.java,v 1.2 2004/07/25 18:01:47 vlad_r Exp $
  */
 package com.vladium.util;
@@ -19,14 +19,14 @@ import java.util.Enumeration;
  * java.lang.ClassLoader API (the class/resource loading part). This
  * implementation is merely a wrapper around ClassLoaderResolverget.ClassLoader()
  * method.
- * 
+ *
  * @author Vlad Roubtsov, (C) 2003
  */
 public
 abstract class ResourceLoader
 {
     // public: ................................................................
-    
+
     /**
      * @see java.lang.ClassLoader#loadClass(java.lang.String)
      */
@@ -35,18 +35,18 @@ abstract class ResourceLoader
     {
         final Class caller = ClassLoaderResolver.getCallerClass (1);
         final ClassLoader loader = ClassLoaderResolver.getClassLoader (caller);
-        
+
         return Class.forName (name, false, loader);
     }
 
     /**
      * @see java.lang.ClassLoader#getResource(java.lang.String)
-     */    
+     */
     public static URL getResource (final String name)
     {
         final Class caller = ClassLoaderResolver.getCallerClass (1);
         final ClassLoader loader = ClassLoaderResolver.getClassLoader (caller);
-        
+
         if (loader != null)
             return loader.getResource (name);
         else
@@ -55,12 +55,12 @@ abstract class ResourceLoader
 
     /**
      * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
-     */        
+     */
     public static InputStream getResourceAsStream (final String name)
     {
         final Class caller = ClassLoaderResolver.getCallerClass (1);
         final ClassLoader loader = ClassLoaderResolver.getClassLoader (caller);
-        
+
         if (loader != null)
             return loader.getResourceAsStream (name);
         else
@@ -69,20 +69,20 @@ abstract class ResourceLoader
 
     /**
      * @see java.lang.ClassLoader#getResources(java.lang.String)
-     */            
+     */
     public static Enumeration getResources (final String name)
         throws IOException
     {
         final Class caller = ClassLoaderResolver.getCallerClass (1);
         final ClassLoader loader = ClassLoaderResolver.getClassLoader (caller);
-        
+
         if (loader != null)
             return loader.getResources (name);
         else
             return ClassLoader.getSystemResources (name);
     }
-    
-    
+
+
     public static Class loadClass (final String name, final ClassLoader loader)
         throws ClassNotFoundException
     {
@@ -113,14 +113,14 @@ abstract class ResourceLoader
         else
             return ClassLoader.getSystemResources (name);
     }
-    
+
     // protected: .............................................................
 
     // package: ...............................................................
-    
+
     // private: ...............................................................
-    
-    
+
+
     private ResourceLoader () {} // prevent subclassing
 
 } // end of class

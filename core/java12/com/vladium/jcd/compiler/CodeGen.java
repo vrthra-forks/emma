@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: CodeGen.java,v 1.1.1.1 2004/05/09 16:57:49 vlad_r Exp $
  */
 package com.vladium.jcd.compiler;
@@ -21,8 +21,8 @@ public
 abstract class CodeGen implements IOpcodes
 {
     // public: ................................................................
-    
-    
+
+
     public static void load_local_object_var (final ByteArrayOStream out, final int index)
     {
         if (index <= 3)
@@ -42,7 +42,7 @@ abstract class CodeGen implements IOpcodes
                         index);         // indexbyte2
         }
     }
-    
+
     public static void store_local_object_var (final ByteArrayOStream out, final int index)
     {
         if (index <= 3)
@@ -61,10 +61,10 @@ abstract class CodeGen implements IOpcodes
                         index >>> 8,    // indexbyte1
                         index);         // indexbyte2
         }
-        
+
         // [stack -1]
     }
-    
+
     public static void push_int_value (final ByteArrayOStream out, final ClassDef cls, final int value)
     {
         if ((-1 <= value) && (value <= 5))
@@ -86,7 +86,7 @@ abstract class CodeGen implements IOpcodes
         {
             // TODO: check if it's already there
             final int index = cls.getConstants ().add (new CONSTANT_Integer_info (value));
-            
+
             if (index <= 0xFF)
             {
                 out.write2 (_ldc,
@@ -99,10 +99,10 @@ abstract class CodeGen implements IOpcodes
                             index);       // indexbyte2
             }
         }
-        
+
         // [stack +1]
     }
-    
+
     public static void push_constant_index (final ByteArrayOStream out, final int index)
     {
         if (index <= 0xFF)
@@ -116,17 +116,17 @@ abstract class CodeGen implements IOpcodes
                         index >>> 8,     // indexbyte1
                         index);          // indexbyte2
         }
-        
+
         // [stack +1]
     }
-    
+
     // protected: .............................................................
 
     // package: ...............................................................
-    
+
     // private: ...............................................................
-    
-    
+
+
     private CodeGen () {} // prevent subclassing
 
 } // end of class

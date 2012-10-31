@@ -8,10 +8,10 @@ package search;
 public interface ISortedArraySearch
 {
     // public: ................................................................
-    
+
     /**
      * Search 'data' for a value matching 'key' and return
-     * its index if found. Return  -1 if no match is found. 
+     * its index if found. Return  -1 if no match is found.
      */
     int find (int [] data, int key);
 

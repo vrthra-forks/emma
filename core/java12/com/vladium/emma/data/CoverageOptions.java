@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: CoverageOptions.java,v 1.4 2005/04/24 21:16:09 vlad_r Exp $
  */
 package com.vladium.emma.data;
@@ -21,27 +21,27 @@ public
 final class CoverageOptions implements Serializable
 {
     // public: ................................................................
-    
+
     public boolean excludeEmptyClasses ()
     {
         return m_excludeEmptyClasses;
     }
-    
+
     public boolean excludeSyntheticMethods ()
     {
         return m_excludeSyntheticMethods;
     }
-    
+
     public boolean excludeBridgeMethods ()
     {
         return m_excludeBridgeMethods;
     }
-    
+
     public boolean doSUIDCompensation ()
     {
         return m_doSUIDCompensation;
     }
-    
+
     // protected: .............................................................
 
     // package: ...............................................................
@@ -61,8 +61,8 @@ final class CoverageOptions implements Serializable
         m_excludeBridgeMethods = excludeBridgeMethods;
         m_doSUIDCompensation = doSUIDCompensation;
     }
-    
-    
+
+
     static CoverageOptions readExternal (final DataInput in)
         throws IOException
     {
@@ -71,7 +71,7 @@ final class CoverageOptions implements Serializable
                                     in.readBoolean (),
                                     in.readBoolean ());
     }
-    
+
     static void writeExternal (final CoverageOptions options, final DataOutput out)
         throws IOException
     {
@@ -80,7 +80,7 @@ final class CoverageOptions implements Serializable
         out.writeBoolean (options.m_excludeBridgeMethods);
         out.writeBoolean (options.m_doSUIDCompensation);
     }
-    
+
     // private: ...............................................................
 
     private final boolean m_excludeEmptyClasses;

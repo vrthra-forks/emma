@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: PropertyElement.java,v 1.2 2004/07/25 18:01:48 vlad_r Exp $
  */
 package com.vladium.emma.ant;
@@ -16,19 +16,19 @@ public
 final class PropertyElement
 {
     // public: ................................................................
-    
-    
+
+
     public PropertyElement ()
     {
         // ensure the constructor is always public
     }
-    
+
 
     public String getName ()
     {
         return m_name;
     }
-    
+
     public String getValue ()
     {
         return m_value;
@@ -38,16 +38,16 @@ final class PropertyElement
     {
         m_name = name;
     }
-    
+
     public void setValue (final String value)
     {
         m_value = value;
     }
-    
+
     // protected: .............................................................
 
     // package: ...............................................................
-    
+
     // private: ...............................................................
 
 

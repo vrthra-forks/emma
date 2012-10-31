@@ -18,7 +18,7 @@ public class LinearSearch implements ISortedArraySearch
                 // this line does not get covered unless there is a match:
                 return i;
         }
-        
+
         // this line does not get covered unless 'key' is larger
         // than the every element in 'data':
         return -1;

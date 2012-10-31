@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: AbstractException.java,v 1.1.1.1 2004/05/09 16:57:57 vlad_r Exp $
  */
 package com.vladium.util.exception;
@@ -16,10 +16,10 @@ import java.io.PrintWriter;
 // ----------------------------------------------------------------------------
 /**
  * Based on code published by me in <a href="http://www.fawcette.com/javapro/2002_12/online/exception_vroubtsov_12_16_02/default_pf.asp">JavaPro, 2002</a>.<P>
- * 
+ *
  * This checked exception class is designed as a base/expansion point for the
  * entire hierarchy of checked exceptions in a project.<P>
- * 
+ *
  * It provides the following features:
  * <UL>
  *    <LI> ability to take in compact error codes that map to full text messages
@@ -29,8 +29,8 @@ import java.io.PrintWriter;
  *    can be parametrized in the java.text.MessageFormat style;
  *    <LI> exception chaining in J2SE versions prior to 1.4
  * </UL>
- * 
- * See {@link AbstractRuntimeException} for an unchecked version of the same class.<P> 
+ *
+ * See {@link AbstractRuntimeException} for an unchecked version of the same class.<P>
  *
  * TODO: javadoc
  *
@@ -44,7 +44,7 @@ import java.io.PrintWriter;
  *
  * All constructors taking an 'arguments' parameter supply parameters to the error
  * message used as a java.text.MessageFormat pattern.<P>
- * 
+ *
  * Example:
  * <PRE><CODE>
  *  File file = ...
@@ -76,7 +76,7 @@ import java.io.PrintWriter;
  * </CODE></PRE>
  * The bundle name is relative to MyException package. This step can omitted if
  * the bundle name is "exceptions".
- * 
+ *
  * Note that the implementation correctly resolves error code name collisions
  * across independently developed exception families, as long as resource bundles
  * use unique names. Specifically, error codes follow inheritance and hiding rules
@@ -92,13 +92,13 @@ abstract class AbstractException extends Exception implements ICodedException, I
 
     /**
      * Constructs an exception with null message and null cause.
-     */    
+     */
     public AbstractException ()
     {
         m_cause = null;
         m_arguments = null;
     }
-    
+
     /**
      * Constructs an exception with given error message/code and null cause.
      *
@@ -110,10 +110,10 @@ abstract class AbstractException extends Exception implements ICodedException, I
         m_cause = null;
         m_arguments = null;
     }
-    
+
     /**
      * Constructs an exception with given error message/code and null cause.
-     *   
+     *
      * @param message the detail message [can be null]
      * @param arguments message format parameters [can be null or empty]
      *
@@ -125,7 +125,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
         m_cause = null;
         m_arguments = arguments == null ? null : (Object []) arguments.clone ();
     }
-    
+
     /**
      * Constructs an exception with null error message/code and given cause.
      *
@@ -137,7 +137,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
         m_cause = cause;
         m_arguments = null;
     }
-    
+
     /**
      * Constructs an exception with given error message/code and given cause.
      *
@@ -150,7 +150,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
         m_cause = cause;
         m_arguments = null;
     }
-    
+
     /**
      * Constructs an exception with given error message/code and given cause.
      *
@@ -166,7 +166,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
         m_cause = cause;
         m_arguments = arguments == null ? null : (Object []) arguments.clone ();
     }
-    
+
 
     /**
      * Overrides base method to support error code lookup and avoid returning nulls.
@@ -177,7 +177,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
      *
      * @return String error message provided at construction time or the result
      * of toString() if no/null message was provided [never null].
-     */  
+     */
     public final String getMessage ()
     {
         if (m_message == null) // not synchronized by design
@@ -185,7 +185,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
             String msg;
             final String supermsg = super.getMessage ();
             final Class _class = getClass ();
-            
+
             if (m_arguments == null)
             {
                 msg = ExceptionCommon.getMessage (_class, supermsg);
@@ -194,24 +194,24 @@ abstract class AbstractException extends Exception implements ICodedException, I
             {
                 msg = ExceptionCommon.getMessage (_class, supermsg, m_arguments);
             }
-            
+
             if (msg == null)
             {
                 // this is the same as what's done in Throwable.toString() [copied here to be independent of future JDK changes]
                 final String className = _class.getName ();
-                
+
                 msg = (supermsg != null) ? (className + ": " + supermsg) : className;
             }
-            
+
             m_message = msg;
         }
-        
+
         return m_message;
     }
-    
+
     /**
      * Overrides base method for the sole purpose of making it final.<P>
-     * 
+     *
      * Equivalent to {@link #getMessage}.
      */
     public final String getLocalizedMessage ()
@@ -224,37 +224,37 @@ abstract class AbstractException extends Exception implements ICodedException, I
     /**
      * Overrides Exception.printStackTrace() to (a) force the output to go
      * to System.out and (b) handle nested exceptions in JDKs prior to 1.4.<P>
-     * 
+     *
      * Subclasses cannot override.
-     */    
+     */
     public final void printStackTrace ()
     {
         // NOTE: unlike the JDK implementation, force the output to go to System.out:
         ExceptionCommon.printStackTrace (this, System.out);
     }
-    
+
     /**
      * Overrides Exception.printStackTrace() to handle nested exceptions in JDKs prior to 1.4.<P>
-     * 
+     *
      * Subclasses cannot override.
-     */    
+     */
     public final void printStackTrace (final PrintStream s)
     {
         ExceptionCommon.printStackTrace (this, s);
     }
-    
+
     /**
      * Overrides Exception.printStackTrace() to handle nested exceptions in JDKs prior to 1.4.<P>
-     * 
+     *
      * Subclasses cannot override.
-     */ 
+     */
     public final void printStackTrace (final PrintWriter s)
     {
         ExceptionCommon.printStackTrace (this, s);
     }
 
     // ICodedException:
-    
+
     /**
      * Returns the String that was passed as 'message' constructor argument.
      * Can be null.
@@ -267,7 +267,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
     }
 
     // IThrowableWrapper:
-    
+
     /**
      * This implements {@link IThrowableWrapper}
      * and also overrides the base method in JDK 1.4+.
@@ -281,7 +281,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
     {
         super.printStackTrace (ps);
     }
-    
+
     public void __printStackTrace (final PrintWriter pw)
     {
         super.printStackTrace (pw);
@@ -300,7 +300,7 @@ abstract class AbstractException extends Exception implements ICodedException, I
         // permissions
         ExceptionCommon.addExceptionResource (namespace, messageResourceBundleName);
     }
-    
+
     // protected: .............................................................
 
     // package: ...............................................................
@@ -319,11 +319,11 @@ abstract class AbstractException extends Exception implements ICodedException, I
         out.defaultWriteObject ();
     }
 
-    
+
     private String m_message; // marshalled/cached result of getMessage()
     private transient final Object [] m_arguments;
     // note: this field duplicates functionality available in stock Throwable in JRE 1.4+
     private final Throwable m_cause;
-    
+
 } // end of class
 // ----------------------------------------------------------------------------

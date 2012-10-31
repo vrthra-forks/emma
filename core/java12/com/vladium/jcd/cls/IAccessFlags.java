@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: IAccessFlags.java,v 1.1.1.1 2004/05/09 16:57:46 vlad_r Exp $
  */
 package com.vladium.jcd.cls;
@@ -30,7 +30,7 @@ interface IAccessFlags
     static final int ACC_NATIVE         = 0x0100;
     static final int ACC_INTERFACE      = 0x0200;
     static final int ACC_ABSTRACT       = 0x0400;
-    
+
     static final int ALL_ACC [] = new int []
     {
         ACC_PUBLIC,
@@ -38,14 +38,14 @@ interface IAccessFlags
         ACC_PROTECTED,
         ACC_STATIC,
         ACC_FINAL,
-        ACC_SYNCHRONIZED,     
+        ACC_SYNCHRONIZED,
         ACC_VOLATILE,
         ACC_TRANSIENT,
         ACC_NATIVE,
         ACC_INTERFACE,
         ACC_ABSTRACT,
     };
-    
+
     static final String ALL_ACC_NAMES [] = new String []
     {
         "public",
@@ -53,16 +53,16 @@ interface IAccessFlags
         "protected",
         "static",
         "final",
-        "synchronized",     
+        "synchronized",
         "volatile",
         "transient",
         "native",
         "interface",
         "abstract",
     };
-    
+
     void setAccessFlags (int flags);
     int getAccessFlags ();
-    
+
 } // end of interface
 // ----------------------------------------------------------------------------

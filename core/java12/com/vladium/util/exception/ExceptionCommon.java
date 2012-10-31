@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: ExceptionCommon.java,v 1.2 2004/07/25 18:01:49 vlad_r Exp $
  */
 package com.vladium.util.exception;
@@ -25,10 +25,10 @@ import com.vladium.util.IJREVersion;
 // ----------------------------------------------------------------------------
 /**
  * TODO: javadoc
- * 
+ *
  * Based on code <a href="http://www.fawcette.com/javapro/2002_12/online/exception_vroubtsov_12_16_02/default_pf.asp">published</a>
  * by me in JavaPro, 2002.<P>
- * 
+ *
  * This non-instantiable class provides static support functions common to
  * {@link AbstractException} and {@link AbstractRuntimeException}.<P>
  *
@@ -37,7 +37,7 @@ import com.vladium.util.IJREVersion;
 abstract class ExceptionCommon implements IJREVersion
 {
     // public: ................................................................
-               
+
     /**
      * This method can be called by static initializers of {@link AbstractException}
      * and {@link AbstractRuntimeException} subclasses in order to add another
@@ -59,7 +59,7 @@ abstract class ExceptionCommon implements IJREVersion
      *     <LI> finally, if all of the above steps fail, the root resource bundle
      *     specified by {@link #ROOT_RESOURCE_BUNDLE_NAME} is searched.
      * </UL>
-     * 
+     *
      * This strategy ensures that error codes follow inheritance and hiding rules
      * similar to Java static methods.<P>
      * </BLOCKQUOTE>
@@ -77,7 +77,7 @@ abstract class ExceptionCommon implements IJREVersion
      * @param messageResourceBundleName name of a bundle (path relative to 'namespace'
      * package) to add to the set from which error code mappings are retrieved
      * [the method is a no-op if this is null or an empty string]
-     * 
+     *
      * @return ResourceBundle that corresponds to 'namespace' key or null if
      * no such bundle could be loaded
      *
@@ -101,20 +101,20 @@ abstract class ExceptionCommon implements IJREVersion
                     "] is not a subclass of " + ABSTRACT_EXCEPTION.getName () +
                     " or " + ABSTACT_RUNTIME_EXCEPTION.getName ());
             }
-            
+
             // try to load resource bundle
-            
+
             ResourceBundle temprb = null;
             String nameInNamespace = null;
             try
             {
                 nameInNamespace = getNameInNamespace (namespace, messageResourceBundleName);
-                
+
                 //temprb = ResourceBundle.getBundle (nameInNamespace);
-                
+
                 ClassLoader loader = namespace.getClassLoader ();
                 if (loader == null) loader = ClassLoader.getSystemClassLoader ();
-                
+
                 temprb = ResourceBundle.getBundle (nameInNamespace, Locale.getDefault (), loader);
             }
             catch (Throwable ignore)
@@ -123,13 +123,13 @@ abstract class ExceptionCommon implements IJREVersion
                // we are still in a supported configuration
                temprb = null;
             }
-            
+
             if (temprb != null)
             {
                 synchronized (s_exceptionCodeMap)
                 {
                     final ResourceBundle currentrb =
-                        (ResourceBundle) s_exceptionCodeMap.get (namespace); 
+                        (ResourceBundle) s_exceptionCodeMap.get (namespace);
                     if (currentrb != null)
                         return currentrb;
                     else
@@ -140,13 +140,13 @@ abstract class ExceptionCommon implements IJREVersion
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     // protected: .............................................................
 
-    // package: ...............................................................  
+    // package: ...............................................................
 
 
     static void printStackTrace (Throwable t, final PrintWriter out)
@@ -156,8 +156,8 @@ abstract class ExceptionCommon implements IJREVersion
             if (t instanceof IThrowableWrapper)
             {
                 final IThrowableWrapper tw = (IThrowableWrapper) t;
-                
-                tw.__printStackTrace (out); 
+
+                tw.__printStackTrace (out);
             }
             else
             {
@@ -173,15 +173,15 @@ abstract class ExceptionCommon implements IJREVersion
                 else
                 {
                     out.println ();
-                    out.println (NESTED_THROWABLE_HEADER);                
+                    out.println (NESTED_THROWABLE_HEADER);
                 }
-                
+
                 if (t instanceof IThrowableWrapper)
                 {
                     final IThrowableWrapper tw = (IThrowableWrapper) t;
-                    
+
                     tw.__printStackTrace (out);
-                    t = tw.getCause (); 
+                    t = tw.getCause ();
                 }
                 else
                 {
@@ -191,8 +191,8 @@ abstract class ExceptionCommon implements IJREVersion
             }
         }
     }
-    
-    
+
+
     static void printStackTrace (Throwable t, final PrintStream out)
     {
         if (JRE_1_4_PLUS)
@@ -200,8 +200,8 @@ abstract class ExceptionCommon implements IJREVersion
             if (t instanceof IThrowableWrapper)
             {
                 final IThrowableWrapper tw = (IThrowableWrapper) t;
-                
-                tw.__printStackTrace (out); 
+
+                tw.__printStackTrace (out);
             }
             else
             {
@@ -217,15 +217,15 @@ abstract class ExceptionCommon implements IJREVersion
                 else
                 {
                     out.println ();
-                    out.println (NESTED_THROWABLE_HEADER);                
+                    out.println (NESTED_THROWABLE_HEADER);
                 }
-                
+
                 if (t instanceof IThrowableWrapper)
                 {
                     final IThrowableWrapper tw = (IThrowableWrapper) t;
-                    
+
                     tw.__printStackTrace (out);
-                    t = tw.getCause (); 
+                    t = tw.getCause ();
                 }
                 else
                 {
@@ -235,7 +235,7 @@ abstract class ExceptionCommon implements IJREVersion
             }
         }
     }
-    
+
 
     /**
      * Provides support for lookup of exception error codes from {@link AbstractException}
@@ -259,13 +259,13 @@ abstract class ExceptionCommon implements IJREVersion
     static String getMessage (final Class namespace, final String code)
     {
         if (code == null) return null;
-        
+
         try
-        {                      
+        {
             if (code.length () > 0)
             {
                 // look the code up in the resource bundle:
-                final String msg = lookup (namespace, code);     
+                final String msg = lookup (namespace, code);
                 if (msg == null)
                 {
                     // if code lookup failed, return 'code' as is:
@@ -288,7 +288,7 @@ abstract class ExceptionCommon implements IJREVersion
             return code;
         }
     }
-    
+
     /**
      * Provides support for lookup of exception error codes from {@link AbstractException}
      * and {@link AbstractRuntimeException} and their subclasses.
@@ -301,7 +301,7 @@ abstract class ExceptionCommon implements IJREVersion
      * constructor [can be null, in which case null is returned].
      *
      * @param arguments java.text.MessageFormat-style parameters to be substituted
-     * into the error message once it is looked up. 
+     * into the error message once it is looked up.
      *
      * @return looked-up error message or the error code if it could not be
      * looked up [null is returned on null 'code' input only].
@@ -317,7 +317,7 @@ abstract class ExceptionCommon implements IJREVersion
         final String pattern = getMessage (namespace, code);
 
         // assertion: pattern != null
-        
+
         if ((arguments == null) || (arguments.length == 0))
         {
             return pattern;
@@ -332,9 +332,9 @@ abstract class ExceptionCommon implements IJREVersion
             {
                 // this method cannot fail: default to returning the input
                 // verbatim on all unexpected problems:
-                
+
                 final StringBuffer msg = new StringBuffer (code + EOL);
-                
+
                 for (int a = 0; a < arguments.length; a ++)
                 {
                     msg.append ("\t{" + a + "} = [");
@@ -353,30 +353,30 @@ abstract class ExceptionCommon implements IJREVersion
                     msg.append ("]");
                     msg.append (EOL);
                 }
-                
+
                 return msg.toString ();
             }
         }
     }
-    
+
     // private: ...............................................................
 
 
     private ExceptionCommon () {} // prevent subclassing
-        
+
     /**
      * Internal property lookup method. It implements the lookup scheme described
      * in {@link #addExceptionResource}.
-     * 
+     *
      * @return property value corresponding to 'propertyName' [null if lookup fails]
      */
     private static String lookup (Class namespace, final String propertyName)
     {
         if (propertyName == null) return null;
-        
+
         // note: the following does not guard against exceptions that do not subclass
         // our base classes [done elsewhere], however it will not crash either
-        
+
         // check extension bundles:
         if (namespace != null)
         {
@@ -389,7 +389,7 @@ abstract class ExceptionCommon implements IJREVersion
                     rb = (ResourceBundle) s_exceptionCodeMap.get (namespace);
                     if (rb == null)
                     {
-                        // check if there is a default bundle to be loaded for this namespace: 
+                        // check if there is a default bundle to be loaded for this namespace:
                         if ((rb = addExceptionResource (namespace, "exceptions")) == null)
                         {
                             // add an immutable empty bundle to avoid this check in the future:
@@ -397,7 +397,7 @@ abstract class ExceptionCommon implements IJREVersion
                         }
                     }
                 }
-                
+
                 if (rb != null)
                 {
                     String propertyValue = null;
@@ -408,12 +408,12 @@ abstract class ExceptionCommon implements IJREVersion
                     catch (Throwable ignore) {}
                     if (propertyValue != null) return propertyValue;
                 }
-                
+
                 // walk the inheritance chain for 'namespace':
                 namespace = namespace.getSuperclass ();
             }
         }
-        
+
         // if everything fails, check the root bundle:
         if (ROOT_RESOURCE_BUNDLE != null)
         {
@@ -425,67 +425,67 @@ abstract class ExceptionCommon implements IJREVersion
             catch (Throwable ignore) {}
             if (propertyValue != null) return propertyValue;
         }
-        
+
         return null;
     }
-    
+
     private static String getNameInNamespace (final Class namespace, final String name)
     {
         if (namespace == null) return name;
-        
+
         final String namespaceName = namespace.getName ();
         final int lastDot = namespaceName.lastIndexOf ('.');
-        
+
         if (lastDot <= 0)
             return name;
         else
             return namespaceName.substring (0, lastDot + 1)  + name;
     }
-    
+
 
     // changes this to 'false' to eliminate repetition of error codes in
-    // the output of getMessage(): 
+    // the output of getMessage():
     private static final boolean EMBED_ERROR_CODE = true;
 
     // the name of the 'root' message resource bundle, derived as
     // [this package name + ".exceptions"]:
     private static final String ROOT_RESOURCE_BUNDLE_NAME;      // set in <clinit>
-    
-    // the root resource bundle; always checked if all other lookups fail:    
+
+    // the root resource bundle; always checked if all other lookups fail:
     private static final ResourceBundle ROOT_RESOURCE_BUNDLE;   // set in <clinit>
-    
+
     // static cache of all loaded resource bundles, populated via addExceptionResource():
     private static final Map /* Class -> ResourceBundle */ s_exceptionCodeMap = new HashMap ();
-    
+
     // misc constants:
-    
+
     private static final String NESTED_THROWABLE_HEADER = "[NESTED EXCEPTION]:";
     private static final Class THROWABLE                    = Throwable.class;
     private static final Class ABSTRACT_EXCEPTION           = AbstractException.class;
     private static final Class ABSTACT_RUNTIME_EXCEPTION    = AbstractRuntimeException.class;
-    /*private*/ static final Enumeration EMPTY_ENUMERATION  = Collections.enumeration (Collections.EMPTY_SET);    
+    /*private*/ static final Enumeration EMPTY_ENUMERATION  = Collections.enumeration (Collections.EMPTY_SET);
     private static final ResourceBundle EMPTY_RESOURCE_BUNDLE = new ResourceBundle ()
     {
         public Object handleGetObject (final String key)
         {
             return null;
         }
-        
+
         public Enumeration getKeys ()
         {
             return EMPTY_ENUMERATION;
         }
     };
-    
+
     // end-of-line terminator for the current platform:
     private static final String EOL = System.getProperty ("line.separator", "\n");
-    
-    
+
+
     static
     {
         // set the name of ROOT_RESOURCE_BUNDLE_NAME:
         ROOT_RESOURCE_BUNDLE_NAME = getNameInNamespace (ExceptionCommon.class, "exceptions");
-                
+
         // set the root resource bundle:
         ResourceBundle temprb = null;
         try
@@ -496,8 +496,8 @@ abstract class ExceptionCommon implements IJREVersion
         {
             // if the exception codes rb is absent, we are still in a supported configuration
         }
-        ROOT_RESOURCE_BUNDLE = temprb;        
+        ROOT_RESOURCE_BUNDLE = temprb;
     }
-    
+
 } // end of class
 // ----------------------------------------------------------------------------

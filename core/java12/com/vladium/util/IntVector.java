@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: IntVector.java,v 1.1.1.1 2004/05/09 16:57:53 vlad_r Exp $
  */
 package com.vladium.util;
@@ -16,26 +16,26 @@ public
 final class IntVector implements Cloneable
 {
     // public: ................................................................
-    
+
     public IntVector ()
     {
         this (5);
     }
-    
+
     public IntVector (final int initCapacity)
     {
         m_values = new int [initCapacity];
     }
-    
+
     // ACCESSORS:
-    
+
     public int get (final int index)
     {
         if (index > m_size - 1)
-            throw new IndexOutOfBoundsException ("get[" + index + "] on vector of size " + m_size);                
+            throw new IndexOutOfBoundsException ("get[" + index + "] on vector of size " + m_size);
         return m_values [index];
     }
-    
+
     public int [] values ()
     {
         if (m_size == 0)
@@ -44,7 +44,7 @@ final class IntVector implements Cloneable
         {
             final int size = m_size;
             final int [] result = new int [size];
-            
+
             if (size < COPY_THRESHOLD)
             {
                 for (int i = 0; i < size; ++ i) result [i] = m_values [i];
@@ -53,18 +53,18 @@ final class IntVector implements Cloneable
             {
                 System.arraycopy (m_values, 0, result, 0, size);
             }
-            
+
             return result;
         }
     }
-    
+
     public int size ()
     {
         return m_size;
     }
-    
+
     // Cloneable:
-    
+
     /**
      * Performs deep copy.
      */
@@ -73,7 +73,7 @@ final class IntVector implements Cloneable
         try
         {
             final IntVector _clone = (IntVector) super.clone ();
-            
+
             // deep clone:
             if (m_size < COPY_THRESHOLD)
             {
@@ -85,7 +85,7 @@ final class IntVector implements Cloneable
             {
                 _clone.m_values = (int []) m_values.clone ();
             }
-            
+
             return _clone;
         }
         catch (CloneNotSupportedException e)
@@ -93,7 +93,7 @@ final class IntVector implements Cloneable
             throw new InternalError (e.toString ());
         }
     }
-    
+
     public String toString ()
     {
         final StringBuffer s = new StringBuffer (super.toString() + ", size " + m_size + ": ");
@@ -102,23 +102,23 @@ final class IntVector implements Cloneable
             if (i > 0) s.append (", ");
             s.append (m_values [i]);
         }
-        
+
         return s.toString ();
     }
-    
+
     // MUTATORS:
-    
+
     public int set (final int index, final int value)
     {
         if (index > m_size - 1)
             throw new IndexOutOfBoundsException ("get[" + index + "] on vector of size " + m_size);
-        
+
         final int current_value = m_values [index];
         m_values [index] = value;
-        
+
         return current_value;
     }
-    
+
     public void add (final int value)
     {
         final int capacity = m_values.length;
@@ -133,23 +133,23 @@ final class IntVector implements Cloneable
             {
                 System.arraycopy (m_values, 0, values, 0, capacity);
             }
-            
+
             m_values = values;
         }
-        
+
         m_values [m_size ++] = value;
-    }    
-    
+    }
+
     // protected: .............................................................
 
     // package: ...............................................................
-    
+
     // private: ...............................................................
-    
-    
+
+
     private int [] m_values; // never null
     private int m_size;
-    
+
     private static final int COPY_THRESHOLD = 10;
 
 } // end of class

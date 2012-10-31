@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: ReportGenerator.java,v 1.2 2004/07/25 18:01:49 vlad_r Exp $
  */
 package com.vladium.emma.report.txt;
@@ -47,59 +47,59 @@ final class ReportGenerator extends AbstractReportGenerator
                             implements IAppErrorCodes
 {
     // public: ................................................................
-    
+
     // TODO: this is prototype quality, needs major cleanup
-    
+
     // IReportGenerator:
-    
+
     public String getType ()
     {
         return TYPE;
     }
-    
+
     public void process (final IMetaData mdata, final ICoverageData cdata,
                          final SourcePathCache cache, final IProperties properties)
         throws EMMARuntimeException
     {
         initialize (mdata, cdata, cache, properties);
-        
+
         long start = 0, end;
         final boolean trace1 = m_log.atTRACE1 ();
-        
+
         if (trace1) start = System.currentTimeMillis ();
-        
+
         {
             m_queue = new LinkedList ();
             for (m_queue.add (m_view.getRoot ()); ! m_queue.isEmpty (); )
             {
                 final IItem head = (IItem) m_queue.removeFirst ();
-                
+
                 head.accept (this, null);
             }
             line ();
-            
+
             close ();
         }
-                
+
         if (trace1)
         {
             end = System.currentTimeMillis ();
-            
+
             m_log.trace1 ("process", "[" + getType () + "] report generated in " + (end - start) + " ms");
         }
     }
-    
+
     public void cleanup ()
     {
         m_queue = null;
         close ();
-        
+
         super.cleanup ();
     }
-    
-    
+
+
     // IItemVisitor:
-    
+
     public Object visit (final AllItem item, final Object ctx)
     {
         File outFile = m_settings.getOutFile ();
@@ -108,135 +108,135 @@ final class ReportGenerator extends AbstractReportGenerator
             outFile = new File ("coverage.txt");
             m_settings.setOutFile (outFile);
         }
-        
+
         final File fullOutFile = Files.newFile (m_settings.getOutDir (), outFile);
-        
+
         m_log.info ("writing [" + getType () + "] report to [" + fullOutFile.getAbsolutePath () + "] ...");
-        
+
         openOutFile (fullOutFile, m_settings.getOutEncoding (), true);
-        
+
         // build ID stamp:
         try
         {
             final StringBuffer label = new StringBuffer (101);
-            
+
             label.append ("[");
             label.append (IAppConstants.APP_NAME);
             label.append (" v"); label.append (IAppConstants.APP_VERSION_WITH_BUILD_ID_AND_TAG);
             label.append (" report, generated ");
             label.append (new Date (EMMAProperties.getTimeStamp ()));
             label.append ("]");
-            
+
             m_out.write (label.toString ());
             m_out.newLine ();
-            
+
             m_out.flush ();
         }
         catch (IOException ioe)
         {
             throw new EMMARuntimeException (IAppErrorCodes.REPORT_IO_FAILURE, ioe);
         }
-        
+
         final int [] columns = m_settings.getColumnOrder ();
-         
+
         line ();
-                
+
         // [all] coverage summary row:
-        addTitleRow ("OVERALL COVERAGE SUMMARY", 0, 1);            
+        addTitleRow ("OVERALL COVERAGE SUMMARY", 0, 1);
         {
             // header row:
             addHeaderRow (item, columns);
-            
+
             // coverage row:
             addItemRow (item, columns);
         }
-                
+
         // [all] stats summary table ([all] only):
         addTitleRow ("OVERALL STATS SUMMARY", 1, 1);
         {
             row ("total packages:" + m_separator + item.getChildCount ());
-            row ("total classes:" + m_separator + item.getAggregate (IItem.TOTAL_CLASS_COUNT)); 
+            row ("total classes:" + m_separator + item.getAggregate (IItem.TOTAL_CLASS_COUNT));
             row ("total methods:" + m_separator + item.getAggregate (IItem.TOTAL_METHOD_COUNT));
-            
+
             if (m_srcView && m_hasSrcFileInfo)
             {
                 row ("total executable files:" + m_separator + item.getAggregate (IItem.TOTAL_SRCFILE_COUNT));
-                
+
                 if (m_hasLineNumberInfo)
                     row ("total executable lines:" + m_separator + item.getAggregate (IItem.TOTAL_LINE_COUNT));
             }
         }
-        
+
         final boolean deeper = (m_settings.getDepth () > item.getMetadata ().getTypeID ());
-        
+
         // render package summary rows:
         addTitleRow ("COVERAGE BREAKDOWN BY PACKAGE", 1, 1);
         {
             boolean headerDone = false;
-            final ItemComparator order = m_typeSortComparators [PackageItem.getTypeMetadata ().getTypeID ()];                
+            final ItemComparator order = m_typeSortComparators [PackageItem.getTypeMetadata ().getTypeID ()];
             for (Iterator packages = item.getChildren (order); packages.hasNext (); )
             {
                 final IItem pkg = (IItem) packages.next ();
-                
+
                 if (! headerDone)
                 {
                     // header row:
-                    addHeaderRow (pkg, columns);                        
+                    addHeaderRow (pkg, columns);
                     headerDone = true;
                 }
-                
+
                 // coverage row:
                 addItemRow (pkg, columns);
-                
+
                 if (deeper) m_queue.addLast (pkg);
             }
         }
 
         return ctx;
     }
-    
+
     public Object visit (final PackageItem item, final Object ctx)
     {
         if (m_verbose) m_log.verbose ("  report: processing package [" + item.getName () + "] ...");
-        
+
         final int [] columns = m_settings.getColumnOrder ();
-        
+
         line ();
-        
+
         // coverage summary row:
-        addTitleRow ("COVERAGE SUMMARY FOR PACKAGE [".concat (item.getName ()).concat ("]"), 0, 1);            
+        addTitleRow ("COVERAGE SUMMARY FOR PACKAGE [".concat (item.getName ()).concat ("]"), 0, 1);
         {
             // header row:
             addHeaderRow (item, columns);
-            
+
             // coverage row:
             addItemRow (item, columns);
         }
-        
-        
+
+
         final boolean deeper = (m_settings.getDepth () > item.getMetadata ().getTypeID ());
-                
+
         // render child summary rows:
-        
+
         final String summaryTitle = m_srcView ? "COVERAGE BREAKDOWN BY SOURCE FILE" : "COVERAGE BREAKDOWN BY CLASS";
         addTitleRow (summaryTitle, 1, 1);
         {
             boolean headerDone = false;
-            final ItemComparator order = m_typeSortComparators [m_srcView ? SrcFileItem.getTypeMetadata ().getTypeID () : ClassItem.getTypeMetadata ().getTypeID ()];                
+            final ItemComparator order = m_typeSortComparators [m_srcView ? SrcFileItem.getTypeMetadata ().getTypeID () : ClassItem.getTypeMetadata ().getTypeID ()];
             for (Iterator srcORclsFiles = item.getChildren (order); srcORclsFiles.hasNext (); )
             {
                 final IItem srcORcls = (IItem) srcORclsFiles.next ();
-                
+
                 if (! headerDone)
                 {
                     // header row:
-                    addHeaderRow (srcORcls, columns);                        
+                    addHeaderRow (srcORcls, columns);
                     headerDone = true;
                 }
-                
+
                 // coverage row:
                 addItemRow (srcORcls, columns);
-                
+
                 if (deeper) m_queue.addLast (srcORcls);
             }
         }
@@ -247,46 +247,46 @@ final class ReportGenerator extends AbstractReportGenerator
     public Object visit (final SrcFileItem item, final Object ctx)
     {
         final int [] columns = m_settings.getColumnOrder ();
-        
+
         line ();
-        
+
         // coverage summary row:
-        addTitleRow ("COVERAGE SUMMARY FOR SOURCE FILE [".concat (item.getName ()).concat ("]"), 0, 1);            
+        addTitleRow ("COVERAGE SUMMARY FOR SOURCE FILE [".concat (item.getName ()).concat ("]"), 0, 1);
         {
             // header row:
             addHeaderRow (item, columns);
-            
+
             // coverage row:
             addItemRow (item, columns);
         }
-        
+
         // render child summary rows:
         addTitleRow ("COVERAGE BREAKDOWN BY CLASS AND METHOD", 1, 1);
         {
             boolean headerDone = false;
-            final ItemComparator order = m_typeSortComparators [ClassItem.getTypeMetadata ().getTypeID ()];                
+            final ItemComparator order = m_typeSortComparators [ClassItem.getTypeMetadata ().getTypeID ()];
             for (Iterator classes = item.getChildren (order); classes.hasNext (); )
             {
                 final IItem cls = (IItem) classes.next ();
-                
+
                 if (! headerDone)
                 {
                     // header row:
-                    addHeaderRow (cls, columns);                        
+                    addHeaderRow (cls, columns);
                     headerDone = true;
                 }
-                
+
                 // coverage row:
                 //addItemRow (child, columns);
-                
+
                 addTitleRow ("class [" + cls.getName () + "] methods", 0, 0);
-                
+
                 // TODO: select the right comparator here
-                final ItemComparator order2 = m_typeSortComparators [MethodItem.getTypeMetadata ().getTypeID ()];                
+                final ItemComparator order2 = m_typeSortComparators [MethodItem.getTypeMetadata ().getTypeID ()];
                 for (Iterator methods = cls.getChildren (order2); methods.hasNext (); )
                 {
                     final MethodItem method = (MethodItem) methods.next ();
-                    
+
                     addItemRow (method, columns);
                 }
             }
@@ -294,53 +294,53 @@ final class ReportGenerator extends AbstractReportGenerator
 
         return ctx;
     }
-    
+
     public Object visit (final ClassItem item, final Object ctx)
     {
         final int [] columns = m_settings.getColumnOrder ();
-        
+
         line ();
-        
+
         // coverage summary row:
-        addTitleRow ("COVERAGE SUMMARY FOR CLASS [".concat (item.getName ()).concat ("]"), 0, 1);            
+        addTitleRow ("COVERAGE SUMMARY FOR CLASS [".concat (item.getName ()).concat ("]"), 0, 1);
         {
             // header row:
             addHeaderRow (item, columns);
-            
+
             // coverage row:
             addItemRow (item, columns);
         }
-        
+
         // render child summary rows:
         addTitleRow ("COVERAGE BREAKDOWN BY METHOD", 1, 1);
         {
-            final ItemComparator order = m_typeSortComparators [MethodItem.getTypeMetadata ().getTypeID ()];                
+            final ItemComparator order = m_typeSortComparators [MethodItem.getTypeMetadata ().getTypeID ()];
             for (Iterator methods = item.getChildren (order); methods.hasNext (); )
             {
                 final IItem method = (IItem) methods.next ();
-                
+
                 // coverage row:
-                addItemRow (method, columns);                
+                addItemRow (method, columns);
             }
         }
 
         return ctx;
     }
-        
+
     // protected: .............................................................
 
     // package: ...............................................................
-    
+
     // private: ...............................................................
-    
-    
+
+
     private void addTitleRow (final String text, final int hlines, final int flines)
     {
         for (int i = 0; i < hlines; ++ i) eol ();
         row (new StringBuffer (text).append (":"));
         for (int i = 0; i < flines; ++ i) eol ();
-    } 
-    
+    }
+
     private void addHeaderRow (final IItem item, final int [] columns)
     {
         if ($assert.ENABLED)
@@ -348,15 +348,15 @@ final class ReportGenerator extends AbstractReportGenerator
             $assert.ASSERT (item != null, "null input: item");
             $assert.ASSERT (columns != null, "null input: columns");
         }
-        
+
         // header row:
         final StringBuffer buf = new StringBuffer ();
-        
+
         for (int c = 0, cLimit = columns.length; c < cLimit; ++ c)
         {
             final int attrID = columns [c];
             final IItemAttribute attr = item.getAttribute (attrID, m_settings.getUnitsType ());
-            
+
             if (attr != null)
             {
                 buf.append ('[');
@@ -365,11 +365,11 @@ final class ReportGenerator extends AbstractReportGenerator
             }
             if (c != cLimit - 1) buf.append (m_separator);
         }
-        
+
         row (buf);
     }
-    
-    
+
+
     /*
      * No header row, just data rows.
      */
@@ -380,18 +380,18 @@ final class ReportGenerator extends AbstractReportGenerator
             $assert.ASSERT (item != null, "null input: item");
             $assert.ASSERT (columns != null, "null input: columns");
         }
-        
+
         final StringBuffer buf = new StringBuffer (11); // TODO: reuse a buffer
-        
+
         for (int c = 0, cLimit = columns.length; c < cLimit; ++ c)
         {
             final int attrID = columns [c];
             final IItemAttribute attr = item.getAttribute (attrID, m_settings.getUnitsType ());
-            
+
             if (attr != null)
             {
                 boolean fail = (m_metrics [attrID] > 0) && ! attr.passes (item, m_metrics [attrID]);
-                
+
                 if (fail)
                 {
                     //buf.append ('(');
@@ -407,15 +407,15 @@ final class ReportGenerator extends AbstractReportGenerator
             }
             if (c != cLimit - 1) buf.append (m_separator);
         }
-        
+
         row (buf);
     }
-    
-    
+
+
     private void row (final StringBuffer str)
     {
         if ($assert.ENABLED) $assert.ASSERT (str != null, "str = null");
-        
+
         try
         {
             m_out.write (str.toString ());
@@ -426,11 +426,11 @@ final class ReportGenerator extends AbstractReportGenerator
             throw new EMMARuntimeException (IAppErrorCodes.REPORT_IO_FAILURE, ioe);
         }
     }
-    
+
     private void row (final String str)
     {
         if ($assert.ENABLED) $assert.ASSERT (str != null, "str = null");
-        
+
         try
         {
             m_out.write (str);
@@ -441,7 +441,7 @@ final class ReportGenerator extends AbstractReportGenerator
             throw new EMMARuntimeException (IAppErrorCodes.REPORT_IO_FAILURE, ioe);
         }
     }
-    
+
     private void line ()
     {
         try
@@ -454,7 +454,7 @@ final class ReportGenerator extends AbstractReportGenerator
             throw new EMMARuntimeException (IAppErrorCodes.REPORT_IO_FAILURE, ioe);
         }
     }
-    
+
     private void eol ()
     {
         try
@@ -466,7 +466,7 @@ final class ReportGenerator extends AbstractReportGenerator
             throw new EMMARuntimeException (IAppErrorCodes.REPORT_IO_FAILURE, ioe);
         }
     }
-    
+
     private void close ()
     {
         if (m_out != null)
@@ -486,7 +486,7 @@ final class ReportGenerator extends AbstractReportGenerator
             }
         }
     }
-    
+
     private void openOutFile (final File file, final String encoding, final boolean mkdirs)
     {
         try
@@ -496,7 +496,7 @@ final class ReportGenerator extends AbstractReportGenerator
                 final File parent = file.getParentFile ();
                 if (parent != null) parent.mkdirs ();
             }
-            
+
             m_out = new BufferedWriter (new OutputStreamWriter (new FileOutputStream (file), encoding), IO_BUF_SIZE);
         }
         catch (UnsupportedEncodingException uee)
@@ -512,16 +512,16 @@ final class ReportGenerator extends AbstractReportGenerator
             throw new EMMARuntimeException (fnfe);
         }
     }
-    
-    
+
+
     private char m_separator = '\t'; // TODO: set this
-    
+
     private LinkedList /* IITem */ m_queue;
     private BufferedWriter m_out;
-    
+
     private static final String TYPE = "txt";
     private static final String LINE = "-------------------------------------------------------------------------------";
-    
+
     private static final int IO_BUF_SIZE = 32 * 1024;
 
 } // end of class

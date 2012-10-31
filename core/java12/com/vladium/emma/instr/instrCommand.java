@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: instrCommand.java,v 1.4 2005/06/21 02:03:48 vlad_r Exp $
  */
 package com.vladium.emma.instr;
@@ -30,7 +30,7 @@ final class instrCommand extends Command
     public instrCommand (final String usageToolName, final String [] args)
     {
         super (usageToolName, args);
-        
+
         m_outMode = InstrProcessor.OutMode.OUT_MODE_COPY; // default
     }
 
@@ -45,26 +45,26 @@ final class instrCommand extends Command
         {
             loader = getClass ().getClassLoader ();
         }
-                
+
         try
         {
             // process 'args':
             {
                 final IOptsParser parser = getOptParser (loader);
                 final IOptsParser.IOpts parsedopts = parser.parse (m_args);
-                
+
                 final int usageRequestLevel = parsedopts.usageRequestLevel ();
-                
+
                 // check if usage is requested before checking args parse errors etc:
-                
+
                 if (usageRequestLevel > 0)
                 {
                     usageexit (null, parser, usageRequestLevel);
                     return;
                 }
-                
+
                 final IOptsParser.IOpt [] opts = parsedopts.getOpts ();
-                
+
                 if (opts == null) // this means there were args parsing errors
                 {
                     parsedopts.error (m_out, STDOUT_WIDTH);
@@ -73,23 +73,23 @@ final class instrCommand extends Command
                 }
 
                 // [assertion: args parsed Ok]
-                
+
                 // version flag is handled as a special case:
-                
+
                 if (parsedopts.hasArg ("v"))
                 {
                     usageexit (null, null, usageRequestLevel);
                     return;
                 }
-                
-                // process parsed args:              
+
+                // process parsed args:
                 try
                 {
                     for (int o = 0; o < opts.length; ++ o)
                     {
                         final IOptsParser.IOpt opt = opts [o];
                         final String on = opt.getCanonicalName ();
-                        
+
                         if (! processOpt (opt))
                         {
                             if ("ip".equals (on))
@@ -106,7 +106,7 @@ final class instrCommand extends Command
                             }
                             else if ("merge".equals (on))
                             {
-                                m_outDataMerge = getOptionalBooleanOptValue (opt) ? Boolean.TRUE : Boolean.FALSE; 
+                                m_outDataMerge = getOptionalBooleanOptValue (opt) ? Boolean.TRUE : Boolean.FALSE;
                             }
                             else if ("ix".equals (on))
                             {
@@ -116,7 +116,7 @@ final class instrCommand extends Command
                             else if ("m".equals (on))
                             {
                                 final String ov = opt.getFirstValue ();
-                                
+
                                 final InstrProcessor.OutMode outMode = InstrProcessor.OutMode.nameToMode (ov);
                                 if (outMode == null)
                                 {
@@ -130,22 +130,22 @@ final class instrCommand extends Command
                     }
 
                     // process prefixed opts:
-                    
+
                     processCmdPropertyOverrides (parsedopts);
 
                     // user '-props' file property overrides:
-                    
+
                     if (! processFilePropertyOverrides ()) return;
                 }
                 catch (IOException ioe)
                 {
                     throw new EMMARuntimeException (IAppErrorCodes.ARGS_IO_FAILURE, ioe);
                 }
-                
+
                 // handle cmd line-level defaults:
                 {
                     if ($assert.ENABLED) $assert.ASSERT (m_outMode != null, "m_outMode not set");
-                    
+
                     if ((m_outMode != InstrProcessor.OutMode.OUT_MODE_OVERWRITE) && (m_outDirName == null))
                     {
                         usageexit ("output directory must be specified for '" + m_outMode + "' output mode", parser,
@@ -154,12 +154,12 @@ final class instrCommand extends Command
                     }
                 }
             }
-            
+
             // run the instrumentor:
             {
                 final InstrProcessor processor = InstrProcessor.create ();
                 processor.setAppName (IAppConstants.APP_NAME); // for log prefixing
-                
+
                 processor.setInstrPath (m_instrpath, true); // TODO: an option to set 'canonical'?
                 processor.setInclExclFilter (m_ixpath);
                 $assert.ASSERT (m_outMode != null, "m_outMode not set");
@@ -168,14 +168,14 @@ final class instrCommand extends Command
                 processor.setMetaOutFile (m_outFileName);
                 processor.setMetaOutMerge (m_outDataMerge);
                 processor.setPropertyOverrides (m_propertyOverrides);
-                
+
                 processor.run ();
             }
         }
         catch (EMMARuntimeException yre)
         {
             // TODO: see below
-            
+
             exit (true, yre.getMessage (), yre, RC_UNEXPECTED); // does not return
             return;
         }
@@ -183,14 +183,14 @@ final class instrCommand extends Command
         {
             // TODO: embed: OS/JVM fingerprint, build #, etc
             // TODO: save stack trace in a file and prompt user to send it to ...
-            
+
             exit (true, "unexpected failure: ", t, RC_UNEXPECTED); // does not return
             return;
         }
 
         exit (false, null, null, RC_OK);
-    }    
-    
+    }
+
     // protected: .............................................................
 
 
@@ -200,16 +200,16 @@ final class instrCommand extends Command
     }
 
     // package: ...............................................................
-    
+
     // private: ...............................................................
-    
-        
+
+
     private String [] m_instrpath;
     private String [] m_ixpath;
     private String m_outDirName;
     private String m_outFileName;
     private Boolean m_outDataMerge;
     private InstrProcessor.OutMode m_outMode;
-    
+
 } // end of class
 // ----------------------------------------------------------------------------

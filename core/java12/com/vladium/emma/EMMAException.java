@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: EMMAException.java,v 1.1.1.1 2004/05/09 16:57:29 vlad_r Exp $
  */
 package com.vladium.emma;
@@ -21,11 +21,11 @@ class EMMAException extends AbstractException
 
     /**
      * Constructs an exception with null message and null cause.
-     */    
+     */
     public EMMAException ()
     {
     }
-    
+
     /**
      * Constructs an exception with given error message/code and null cause.
      *
@@ -35,10 +35,10 @@ class EMMAException extends AbstractException
     {
         super (message);
     }
-    
+
     /**
      * Constructs an exception with given error message/code and null cause.
-     *   
+     *
      * @param message the detail message [can be null]
      * @param arguments message format parameters [can be null or empty]
      *
@@ -48,7 +48,7 @@ class EMMAException extends AbstractException
     {
         super (message, arguments);
     }
-    
+
     /**
      * Constructs an exception with null error message/code and given cause.
      *
@@ -58,7 +58,7 @@ class EMMAException extends AbstractException
     {
         super (cause);
     }
-    
+
     /**
      * Constructs an exception with given error message/code and given cause.
      *
@@ -69,7 +69,7 @@ class EMMAException extends AbstractException
     {
         super (message, cause);
     }
-    
+
     /**
      * Constructs an exception with given error message/code and given cause.
      *
@@ -83,12 +83,12 @@ class EMMAException extends AbstractException
     {
         super (message, arguments, cause);
     }
-    
+
     // protected: .............................................................
 
     // package: ...............................................................
 
     // private: ...............................................................
-    
+
 } // end of class
 // ----------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: IOpcodes.java,v 1.2 2004/07/25 18:01:47 vlad_r Exp $
  */
 package com.vladium.jcd.opcodes;
@@ -16,8 +16,8 @@ public
 interface IOpcodes
 {
     // public: ................................................................
-        
-    //  opcode              hex     dec opbytes stackwords wideable    
+
+    //  opcode              hex     dec opbytes stackwords wideable
     int _nop              = 0x00; // 00     0   0
     int _aconst_null      = 0x01; // 01     0   +1
     int _iconst_m1        = 0x02; // 02     0   +1
@@ -43,7 +43,7 @@ interface IOpcodes
     int _lload            = 0x16; // 22     1   +2  true
     int _fload            = 0x17; // 23     1   +1  true
     int _dload            = 0x18; // 24     1   +2  true
-    int _aload            = 0x19; // 25     1   +1  true  
+    int _aload            = 0x19; // 25     1   +1  true
     int _iload_0          = 0x1A; // 26     0   +1
     int _iload_1          = 0x1B; // 27     0   +1
     int _iload_2          = 0x1C; // 28     0   +1
@@ -225,7 +225,7 @@ interface IOpcodes
     int _impdep1          = 0xFE; // 254
     int _impdep2          = 0xFF; // 255
 
-    
+
     String [] MNEMONICS =
     {
         "nop",              // 0x00    00
@@ -431,17 +431,17 @@ interface IOpcodes
         "goto_w",           // 0xC8    200
         "jsr_w"             // 0xC9    201
     };
-    
-    
+
+
     boolean [] CONDITIONAL_BRANCHES = clinit._CONDITIONAL_BRANCHES;
     boolean [] COMPOUND_CONDITIONAL_BRANCHES = clinit._COMPOUND_CONDITIONAL_BRANCHES;
     boolean [] UNCONDITIONAL_BRANCHES = clinit._UNCONDITIONAL_BRANCHES;
     boolean [] BRANCHES = clinit._BRANCHES;
-    
+
     int [] NARROW_SIZE = clinit._NARROW_SIZE; // including the opcode itself
     int [] WIDE_SIZE = clinit._WIDE_SIZE; // including the opcode itself
-    
-    
+
+
     static final class clinit
     {
         static final boolean [] _CONDITIONAL_BRANCHES;
@@ -450,13 +450,13 @@ interface IOpcodes
         static final boolean [] _BRANCHES;
         static final int [] _NARROW_SIZE;
         static final int [] _WIDE_SIZE;
-        
+
         static
         {
             final int opcodeCount = MNEMONICS.length;
-            
+
             _CONDITIONAL_BRANCHES = new boolean [opcodeCount];
-            
+
             _CONDITIONAL_BRANCHES [_ifeq] = true;
             _CONDITIONAL_BRANCHES [_iflt] = true;
             _CONDITIONAL_BRANCHES [_ifle] = true;
@@ -476,13 +476,13 @@ interface IOpcodes
 
 
             _COMPOUND_CONDITIONAL_BRANCHES = new boolean [opcodeCount];
-            
+
             _COMPOUND_CONDITIONAL_BRANCHES [_tableswitch] = true;
             _COMPOUND_CONDITIONAL_BRANCHES [_lookupswitch] = true;
 
-            
+
             _UNCONDITIONAL_BRANCHES = new boolean  [opcodeCount];
-            
+
             _UNCONDITIONAL_BRANCHES [_goto] = true;
             _UNCONDITIONAL_BRANCHES [_goto_w] = true;
             _UNCONDITIONAL_BRANCHES [_jsr] = true;
@@ -500,7 +500,7 @@ interface IOpcodes
 
 
             _BRANCHES = new boolean [opcodeCount];
-            
+
             for (int o = 0; o < opcodeCount; ++ o)
                 if (_CONDITIONAL_BRANCHES [o]) _BRANCHES [o] = true;
 
@@ -512,9 +512,9 @@ interface IOpcodes
 
 
             _NARROW_SIZE = new int [opcodeCount];
-            
+
             for (int o = 0; o < opcodeCount; ++ o) _NARROW_SIZE [o] = 1;
-            
+
             _NARROW_SIZE [_bipush] = 2;
             _NARROW_SIZE [_sipush] = 3;
 
@@ -558,7 +558,7 @@ interface IOpcodes
 
             _NARROW_SIZE [_lookupswitch] = -1;   // special case #2
             _NARROW_SIZE [_tableswitch] = 0;    // special case #1
-            
+
             _NARROW_SIZE [_getstatic] = 3;
             _NARROW_SIZE [_putstatic] = 3;
             _NARROW_SIZE [_getfield] = 3;
@@ -569,7 +569,7 @@ interface IOpcodes
             _NARROW_SIZE [_invokestatic] = 3;
 
             _NARROW_SIZE [_invokeinterface] = 5;
-                
+
             _NARROW_SIZE [_new] = 3;
             _NARROW_SIZE [_checkcast] = 3;
             _NARROW_SIZE [_instanceof] = 3;
@@ -580,10 +580,10 @@ interface IOpcodes
 
             _NARROW_SIZE [_goto_w] = 5;
             _NARROW_SIZE [_jsr_w] = 5;
-            
-            
+
+
             _WIDE_SIZE = (int []) _NARROW_SIZE.clone ();
-            
+
             _WIDE_SIZE [_iload] = 3;
             _WIDE_SIZE [_lload] = 3;
             _WIDE_SIZE [_fload] = 3;
@@ -594,14 +594,14 @@ interface IOpcodes
             _WIDE_SIZE [_fstore] = 3;
             _WIDE_SIZE [_dstore] = 3;
             _WIDE_SIZE [_astore] = 3;
-            
+
             _WIDE_SIZE [_iinc] = 5;
-            
+
             _WIDE_SIZE [_ret] = 3;
         }
-        
+
     } // end of nested class
-    
+
 } // end of interface
 // ----------------------------------------------------------------------------
 

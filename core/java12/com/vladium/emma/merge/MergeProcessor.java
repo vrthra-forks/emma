@@ -1,9 +1,9 @@
 /* Copyright (C) 2003 Vladimir Roubtsov. All rights reserved.
- * 
+ *
  * This program and the accompanying materials are made available under
  * the terms of the Common Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/cpl-v10.html
- * 
+ *
  * $Id: MergeProcessor.java,v 1.1 2005/06/21 02:04:08 vlad_r Exp $
  */
 package com.vladium.emma.merge;
@@ -40,7 +40,7 @@ final class MergeProcessor extends Processor
 
     /**
      * Factory method for this processor.
-     * 
+     *
      * @return a new Processor instance
      */
     public static MergeProcessor create ()
@@ -49,7 +49,7 @@ final class MergeProcessor extends Processor
     }
 
     /**
-     * 
+     *
      * @param path [null is equivalent to an empty array]
      */
     public synchronized final void setDataPath (final String [] path)
@@ -59,11 +59,11 @@ final class MergeProcessor extends Processor
         else
             m_dataPath = Files.pathToFiles (path, true);
     }
-    
+
     /**
      * NOTE: there is no setter for merge attribute because this processor
      * always overwrites the out file [to ensure compaction]
-     * 
+     *
      * @param fileName [null unsets the previous override setting]
      */
     public synchronized final void setSessionOutFile (final String fileName)
@@ -73,30 +73,30 @@ final class MergeProcessor extends Processor
         else
         {
             final File _file = new File (fileName);
-                
+
             if (_file.exists () && ! _file.isFile ())
                 throw new IllegalArgumentException ("not a file: [" + _file.getAbsolutePath () + "]");
-                
+
             m_sdataOutFile = _file;
         }
     }
-    
+
     // protected: .............................................................
 
-    
+
     protected void validateState ()
     {
         super.validateState ();
-        
+
         if (m_dataPath == null)
             throw new IllegalStateException ("data path not set");
-        
+
         // [m_sdataOutFile can be null]
-        
+
         // [m_propertyOverrides can be null]
     }
-    
-    
+
+
     protected void _run (final IProperties toolProperties)
     {
         final Logger log = m_log;
@@ -105,7 +105,7 @@ final class MergeProcessor extends Processor
         if (verbose)
         {
             log.verbose (IAppConstants.APP_VERBOSE_BUILD_ID);
-            
+
             // [assertion: m_dataPath != null]
             log.verbose ("input data path:");
             log.verbose ("{");
@@ -113,7 +113,7 @@ final class MergeProcessor extends Processor
             {
                 final File f = m_dataPath [p];
                 final String nonexistent = f.exists () ? "" : "{nonexistent} ";
-                
+
                 log.verbose ("  " + nonexistent + f.getAbsolutePath ());
             }
             log.verbose ("}");
@@ -122,7 +122,7 @@ final class MergeProcessor extends Processor
         {
             log.info ("processing input files ...");
         }
-        
+
         // get the data out settings:
         File sdataOutFile = m_sdataOutFile;
         {
@@ -130,61 +130,61 @@ final class MergeProcessor extends Processor
                 sdataOutFile = new File (toolProperties.getProperty (EMMAProperties.PROPERTY_SESSION_DATA_OUT_FILE,
                                                                      EMMAProperties.DEFAULT_SESSION_DATA_OUT_FILE));
         }
-                
+
         RuntimeException failure = null;
         try
         {
             IMetaData mdata = null;
             ICoverageData cdata = null;
-            
+
             // merge all data files:
             try
             {
                 final long start = log.atINFO () ? System.currentTimeMillis () : 0;
-                
+
                 for (int f = 0; f < m_dataPath.length; ++ f)
                 {
                     final File dataFile = m_dataPath [f];
                     if (verbose) log.verbose ("processing input file [" + dataFile.getAbsolutePath () + "] ...");
-                    
+
                     final IMergeable [] fileData = DataFactory.load (dataFile);
-                    
+
                     final IMetaData _mdata = (IMetaData) fileData [DataFactory.TYPE_METADATA];
                     if (_mdata != null)
                     {
                         if (verbose) log.verbose ("  loaded " + _mdata.size () + " metadata entries");
-                        
+
                         if (mdata == null)
                             mdata = _mdata;
                         else
                             mdata = (IMetaData) mdata.merge (_mdata); // note: later datapath entries override earlier ones
                     }
-                    
+
                     final ICoverageData _cdata = (ICoverageData) fileData [DataFactory.TYPE_COVERAGEDATA];
                     if (_cdata != null)
                     {
                         if (verbose) log.verbose ("  loaded " + _cdata.size () + " coverage data entries");
-                        
+
                         if (cdata == null)
                             cdata = _cdata;
                         else
                             cdata = (ICoverageData) cdata.merge (_cdata); // note: later datapath entries override earlier ones
                     }
-                    
+
                     ++ m_dataFileCount;
                 }
-                
+
                 if (log.atINFO ())
                 {
                     final long end = System.currentTimeMillis ();
-                    
+
                     log.info (m_dataFileCount + " file(s) read and merged in " + (end - start) + " ms");
                 }
-                
+
                 if (((mdata == null) || mdata.isEmpty ()) && ((cdata == null) || cdata.isEmpty ()))
                 {
                     log.warning ("nothing to do: no metadata or coverage data found in any of the input files");
-                    
+
                     // TODO: throw exception or exit quietly?
                     return;
                 }
@@ -194,7 +194,7 @@ final class MergeProcessor extends Processor
                 // TODO: handle
                 ioe.printStackTrace (System.out);
             }
-            
+
 
             if (verbose)
             {
@@ -202,26 +202,26 @@ final class MergeProcessor extends Processor
                 {
                     log.verbose ("  merged metadata contains " + mdata.size () + " entries");
                 }
-                
+
                 if (cdata != null)
                 {
                     log.verbose ("  merged coverage data contains " + cdata.size () + " entries");
                 }
             }
-            
+
             // write merged data into output file:
             {
                 $assert.ASSERT (sdataOutFile != null, "sdataOutFile not null");
-                    
+
                 // the case of the output file being one of the input files is
                 // supported; however, for safety reasons we create output in
                 // a temp file and rename it only when the data is safely persisted:
-                
+
                 boolean rename = false;
                 File tempDataOutFile = null;
-                
+
                 final File canonicalDataOutFile = Files.canonicalizeFile (sdataOutFile);
-                
+
                 for (int f = 0; f < m_dataPath.length; ++ f)
                 {
                     final File canonicalDataFile = Files.canonicalizeFile (m_dataPath [f]);
@@ -231,16 +231,16 @@ final class MergeProcessor extends Processor
                         break;
                     }
                 }
-                
+
                 if (rename) // create a temp out file
                 {
                     File tempFileDir = canonicalDataOutFile.getParentFile ();
                     if (tempFileDir == null) tempFileDir = new File ("");
-                    
+
                     // length > 3:
                     final String tempFileName = Files.getFileName (canonicalDataOutFile) + IAppConstants.APP_NAME_LC;
                     final String tempFileExt = EMMAProperties.PROPERTY_TEMP_FILE_EXT;
-                
+
                     try
                     {
                         tempDataOutFile = Files.createTempFile (tempFileDir, tempFileName, tempFileExt);
@@ -250,22 +250,22 @@ final class MergeProcessor extends Processor
                         // TODO: error code
                         throw new EMMARuntimeException (ioe);
                     }
-                    
+
                     log.warning ("the specified output file is one of the input files [" + canonicalDataOutFile + "]");
                     log.warning ("all merged data will be written to a temp file first [" + tempDataOutFile.getAbsolutePath ()  + "]");
                 }
-                
+
                 // persist merged session data:
                 {
                     final long start = log.atINFO () ? System.currentTimeMillis () : 0;
-                    
+
                     File persistFile = null;
                     try
                     {
                         persistFile = tempDataOutFile != null ? tempDataOutFile : canonicalDataOutFile;
-                        
+
                         // TODO: the persister API is ugly, redesign
-                        
+
                         if ((mdata == null) || mdata.isEmpty ())
                             DataFactory.persist (cdata, persistFile, false); // never merge to enforce compaction behavior
                         else if ((cdata == null) || cdata.isEmpty ())
@@ -276,17 +276,17 @@ final class MergeProcessor extends Processor
                     catch (IOException ioe)
                     {
                         if (persistFile != null) persistFile.delete ();
-                        
+
                         // TODO: error code
                         throw new EMMARuntimeException (ioe);
                     }
                     catch (Error e)
                     {
                         if (persistFile != null) persistFile.delete ();
-                        
+
                         throw e; // re-throw
                     }
-                    
+
                     if (rename) // rename-with-delete temp out file into the desired out file
                     {
                         if (! Files.renameFile (tempDataOutFile, canonicalDataOutFile, true)) // overwrite the original archive
@@ -295,15 +295,15 @@ final class MergeProcessor extends Processor
                             throw new EMMARuntimeException ("could not rename temporary file [" + tempDataOutFile.getAbsolutePath () + "] to [" + canonicalDataOutFile + "]: make sure the original file is not locked and can be deleted");
                         }
                     }
-                    
+
                     if (log.atINFO ())
                     {
                         final long end = System.currentTimeMillis ();
-                        
+
                         log.info ("merged/compacted data written to [" + canonicalDataOutFile + "] {in " + (end - start) + " ms}");
                     }
                 }
-            }            
+            }
         }
         catch (SecurityException se)
         {
@@ -317,7 +317,7 @@ final class MergeProcessor extends Processor
         {
             reset ();
         }
-        
+
         if (failure != null)
         {
             if (Exceptions.unexpectedFailure (failure, EXPECTED_FAILURES))
@@ -333,33 +333,33 @@ final class MergeProcessor extends Processor
 
 
     // package: ...............................................................
-    
+
     // private: ...............................................................
-    
-    
+
+
     private MergeProcessor ()
     {
         m_dataPath = IConstants.EMPTY_FILE_ARRAY;
     }
-    
-    
+
+
     private void reset ()
     {
         m_dataFileCount = 0;
     }
-    
-    
+
+
     // caller-settable state [scoped to this runner instance]:
-    
+
     private File [] m_dataPath; // required to be non-null for run() [is set to canonicalized form]
     private File m_sdataOutFile; // user override; can be null for run()
 
     // internal run()-scoped state:
-    
+
     private int m_dataFileCount;
-    
+
     private static final Class [] EXPECTED_FAILURES; // set in <clinit>
-    
+
     static
     {
         EXPECTED_FAILURES = new Class []
